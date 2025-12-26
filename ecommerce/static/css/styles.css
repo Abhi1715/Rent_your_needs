@@ -13,14 +13,23 @@
  body {
     background-color: #ffffff;   /* 🔥 Removes grey page background */
 }
-
+.scroll-offset {
+    padding-top: 250px;
+    margin-top: -250px;
+}
+html {
+    scroll-behavior: smooth;
+}
+#shop-section {
+    scroll-margin-top: 90px; /* navbar height */
+}
 .hero-section {
-    background-image: url("/static/images/hero.jpg");
+    background-image: url("/static/images/200day1.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 
-    height: 40vh;
+    height: 65vh;
     width: 100%;
 }
 

@@ -18,12 +18,12 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="#!">Rent Your Needs</a>
+                <a class="navbar-brand" href="{% url 'home' %}">Rent Your Needs</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -34,12 +34,30 @@
                             </ul>
                         </li>
                     </ul>
+                    {% if user.is_authenticated %}
                     <form class="d-flex">
-                        <button class="btn btn-outline-dark" type="submit">
-                            <i class="bi-cart-fill me-1"></i>
-                            Cart
-                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        {% csrf_token %}
+                        <span class="navbar-text me-3">
+                            Hello, {{ user.username }}!
+                        </span>
+                        <button class="btn btn-outline-dark" type="submit" formaction="{% url 'logout' %}">
+                            Logout
                         </button>
+                    </form>
+                    {% endif %}
+                    <form class="d-flex">
+                        {% if not user.is_authenticated %}
+                       {% csrf_token %} 
+                       <a class="btn btn-outline-dark" href="{% url 'login' %}">Login</a>
+                        &emsp;
+                          <a class="btn btn-outline-dark" href="{% url 'signup' %}">Sign Up</a>
+                        {% endif %}
+                        &emsp;
+                        <a class="btn btn-outline-dark mt-auto" href="{% url 'cart_detail' %}">
+                            <i class="bi-cart-fill me-1"></i>
+                                 cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">{{ cart_item_count }}</span>
+                        </a>
                     </form>
                 </div>
             </div>
@@ -54,15 +72,17 @@
                         <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
                         <div class="fs-5 mb-5">
                             
-                            <span>Rs-{{ product.price }}</span>
+                            <span> ₹{{ product.price }}/day</span>
                         </div>
                         <p class="lead">{{ product.description | truncatewords:50}}</p>
                         <div class="d-flex">
-                            <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-                            <button class="btn btn-outline-dark flex-shrink-0" type="button">
-                                <i class="bi-cart-fill me-1"></i>
+                            
+                            <a class="btn btn-outline-dark mt-auto" href="{% url 'add_to_cart' product.id %}">
+                               <i class="bi-cart-fill me-1"></i>
                                 Add to cart
-                            </button>
+                            
+                            </a>
+                                
                         </div>
                     </div>
                 </div>
@@ -78,7 +98,7 @@
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             
             {% for pro in products %}
-            <div class="col mb-5">
+            <div class="col mb-3">
                 <div class="card h-100">
 
                     <!-- Product image -->
@@ -87,17 +107,21 @@
                          alt="{{ pro.name }}" />
 
                     <!-- Product details -->
-                    <div class="card-body p-4">
+                    <div class="card-body p-2">
                         <div class="text-center">
-                            <h5 class="fw-bolder">{{ pro.name }}</h5>
-                            Rs-{{ pro.price }}
+                            <h5 class="fw-bolder">
+    <a href="{% url 'product_detail' pro.slug %}" class="text-dark text-decoration-none">
+        {{ pro.name }}
+    </a>
+</h5>
+                             ₹{{ pro.price }}/day
                         </div>
                     </div>
 
                     <!-- Product actions -->
-                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="card-footer p-2 pt-0 border-top-0 bg-transparent">
                         <div class="text-center">
-                            <a class="btn btn-outline-dark mt-auto" href="#">
+                            <a class="btn btn-outline-dark mt-auto" href="{% url 'add_to_cart' pro.id %}">
                                 Add to cart
                             </a>
                         </div>
@@ -113,10 +137,32 @@
 
         <!-- Footer-->
         <footer class="py-5 bg-dark mt-auto">
-        <div class="container">
-            <p class="m-0 text-center text-white">
-                Copyright &copy; Your Website 2023
-            </p>
+    <div class="container">
+        <div class="row text-white">
+
+            <!-- About Us -->
+            <div class="col-md-6 mb-3">
+                <h5 class="text-uppercase">About Us</h5>
+                <p class="small">
+                    We are a passionate team focused on building modern, reliable, and user-friendly web
+                    applications. Our goal is to deliver high-quality digital solutions using the latest
+                    technologies and best practices.
+                </p>
+            </div>
+
+            <!-- Social Links -->
+            <div class="col-md-6 mb-3 text-md-end text-center">
+                <h5 class="text-uppercase">Follow Us</h5>
+                <a href="#" class="text-white text-decoration-none me-2"><i class="fab fa-linkedin"></i>linkedin</a>
+                <a href="#" class="text-white text-decoration-none me-2"><i class="fab fa-github"></i>Github</a>
+                <a href="#" class="text-white text-decoration-none"><i class="fab fa-twitter"></i>Twitter</a>
+
+                
+            </div>
+
+        </div>
+        <div class="text-center text-white mt-3">
+            &copy; 2025 Rent Your Needs. All rights reserved.
         </div>
     </footer>
         <!-- Bootstrap core JS-->

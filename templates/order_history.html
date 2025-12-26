@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4">My Orders</h2>
+
+    {% for order in orders %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+
+            <h5>Order #{{ order.id }}</h5>
+
+            <p>
+                Status:
+                {% if order.status == "Cancelled" %}
+                    <span class="badge bg-danger">{{ order.status }}</span>
+                {% elif order.status == "Delivered" %}
+                    <span class="badge bg-primary">{{ order.status }}</span>
+                {% else %}
+                    <span class="badge bg-success">{{ order.status }}</span>
+                {% endif %}
+            </p>
+
+            <p>Total: ₹{{ order.total_price }}</p>
+            <small>Placed on {{ order.created_at }}</small>
+
+            <hr>
+
+            <!-- ✅ PRODUCT LIST -->
+            <h6 class="fw-bold mb-2">Products</h6>
+
+            {% for item in order.items.all %}
+                <div class="d-flex justify-content-between">
+                    <span>
+                        {{ item.product.name }} × {{ item.quantity }}
+                    </span>
+                    <span>₹{{ item.price }}</span>
+                </div>
+            {% endfor %}
+
+            {% if order.status == "Placed" %}
+            <div class="mt-3">
+                <a href="{% url 'cancel_order' order.id %}"
+                   class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Are you sure you want to cancel this order?');">
+                    Cancel Order
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {% empty %}
+    <p>No orders yet.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

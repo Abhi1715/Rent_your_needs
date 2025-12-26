@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4">🛒 Your Cart</h2>
+
+    {% for item in cart.items.all %}
+    <div class="card mb-3 shadow-sm">
+        <div class="row g-0 align-items-center">
+
+            <!-- Product Image -->
+            <div class="col-md-3 text-center">
+                <img src="{{ item.product.image.url }}"
+                     class="img-fluid rounded p-3"
+                     style="max-height:150px;">
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="fw-semibold">{{ item.product.name }}</h5>
+                    <p class="text-muted mb-1">
+                        ₹{{ item.product.price }} / day
+                    </p>
+
+                    <!-- Quantity Controls -->
+                    <div class="d-flex align-items-center mt-2">
+                        <span class="me-2">Quantity:</span>
+
+                        <a href="{% url 'update_cart_item' item.id 'decrease' %}"
+                           class="btn btn-outline-secondary btn-sm">−</a>
+
+                        <span class="mx-3 fw-bold">{{ item.quantity }}</span>
+
+                        <a href="{% url 'update_cart_item' item.id 'increase' %}"
+                           class="btn btn-outline-secondary btn-sm">+</a>
+                    </div>
+
+                    <!-- Rental Days -->
+                    <form method="POST"
+                          action="{% url 'update_rental_days' item.id %}"
+                          class="mt-3 d-flex align-items-center">
+                        {% csrf_token %}
+                        <label class="me-2">Rental Days:</label>
+                        <input type="number"
+                               name="rental_days"
+                               value="{{ item.rental_days }}"
+                               min="1"
+                               class="form-control form-control-sm w-25 me-2">
+                        <button class="btn btn-sm btn-outline-dark">
+                            Update
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Price & Actions -->
+            <div class="col-md-3 text-center">
+                <div class="card-body">
+                    <h6 class="fw-bold">
+                        Total: ₹{{ item.total_price }}
+                    </h6>
+
+                    <a href="{% url 'remove_from_cart' item.id %}"
+                       class="btn btn-outline-danger btn-sm mt-2">
+                        Remove
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% empty %}
+    <div class="alert alert-info text-center">
+        Your cart is empty 🛍️
+    </div>
+    {% endfor %}
+    {% if cart.items.all %}
+<div class="row justify-content-end mt-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Order Summary</h5>
+
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal</span>
+                    <span>₹{{ subtotal }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span>Tax (5%)</span>
+                    <span>₹{{ tax }}</span>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                    <span>Total</span>
+                    <span>₹{{ grand_total }}</span>
+                </div>
+
+                <a href="{% url 'checkout' %}"
+                   class="btn btn-dark w-100 mt-3">
+                    Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+</div>
+
+{% endblock %}
